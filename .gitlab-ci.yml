@@ -1,0 +1,83 @@
+---
+
+default:
+  image: $CI_REGISTRY_IMAGE:latest
+
+include:
+  - template: Code-Quality.gitlab-ci.yml
+  - template: Container-Scanning.gitlab-ci.yml
+  - template: SAST.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
+  - template: Security/License-Scanning.gitlab-ci.yml
+  - template: Security/Secret-Detection.gitlab-ci.yml
+
+stages:
+  - docker
+  - build
+  - test
+  - qa
+  - security
+  - misc
+
+docker build:
+  stage: docker
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  before_script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  script:
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_COMMIT_SHA --destination $CI_REGISTRY_IMAGE:latest
+
+build:
+  stage: build
+  needs: []
+  script:
+    - make
+  artifacts:
+    paths:
+      - terraform-provider-rgw
+    expire_in: 1 week
+
+test:
+  stage: test
+  needs: []
+  script:
+    - make test
+
+code_quality:
+  stage: qa
+  needs: []
+
+license_scanning:
+  stage: qa
+  needs: []
+
+sast:
+  stage: security
+  needs: []
+
+dependency_scanning:
+  stage: security
+  needs: []
+
+container_scanning:
+  stage: security
+  needs:
+    - docker build
+
+secret_detection:
+  stage: security
+  needs: []
+
+code_navigation:
+  stage: misc
+  image: sourcegraph/lsif-go:v1
+  needs: []
+  script:
+    - lsif-go
+  allow_failure: true # recommended
+  artifacts:
+    reports:
+      lsif: dump.lsif

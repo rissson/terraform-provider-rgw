@@ -3,6 +3,7 @@ result*
 docker/volumes/
 terraform-provider-rgw
 bin
+test
 
 # Local .terraform directories
 **/.terraform/*
