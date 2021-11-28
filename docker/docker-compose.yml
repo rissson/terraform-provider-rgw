@@ -1,0 +1,24 @@
+---
+version: "3.5"
+
+services:
+  ceph:
+    image: quay.io/ceph/daemon:v6.0.5-stable-6.0-pacific-centos-8
+    container_name: demo-ceph
+    command: demo
+    hostname: ceph-demo
+    environment:
+      CEPH_PUBLIC_NETWORK: 127.0.0.0/24
+      MON_IP: 127.0.0.1
+      CEPH_DEMO_UID: sandboxId
+      CEPH_DEMO_ACCESS_KEY: sandbox
+      CEPH_DEMO_SECRET_KEY: s3cr3t
+      CEPH_DEMO_BUCKET: sandbox
+      RGW_NAME: ceph-demo
+      RGW_FRONTEND_PORT: 8000
+    volumes:
+        - ./volumes/ceph/etc/:/etc/ceph
+        - ./volumes/ceph/var/:/var/lib/ceph
+        - ./volumes/ceph/log/:/var/log/ceph
+        - ./volumes/ceph/tools/:/tools
+    network_mode: host
