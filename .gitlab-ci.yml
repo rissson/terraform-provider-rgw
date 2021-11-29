@@ -17,6 +17,7 @@ stages:
   - test
   - qa
   - security
+  - release
   - misc
 
 docker build:
@@ -70,6 +71,23 @@ container_scanning:
 secret_detection:
   stage: security
   needs: []
+
+release:
+  stage: release
+  variables:
+    # Disable shallow cloning so that goreleaser can diff between tags to
+    # generate a changelog.
+    GIT_DEPTH: 0
+  script:
+    - gpg --import < $TERRAFORM_GPG_PRIV_KEY_FILE
+    - GITHUB_TOKEN= goreleaser release -f .goreleaser.gitlab.yml --rm-dist
+    - GITLAB_TOKEN= goreleaser release -f .goreleaser.github.yml --rm-dist
+  artifacts:
+    paths:
+      - dist/
+    expire_in: never
+  only:
+    - tags
 
 code_navigation:
   stage: misc

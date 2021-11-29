@@ -18,3 +18,8 @@ RUN curl -1sLf https://download.ceph.com/keys/release.asc | apt-key add - && \
 
 RUN go get -u golang.org/x/lint/golint
 RUN go get -u golang.org/x/tools/...
+RUN apt-get update && \
+    apt-get -y --no-install-recommends install pre-commit
+RUN echo "deb [trusted=yes] https://repo.goreleaser.com/apt/ /" > /etc/apt/sources.list.d/goreleaser.list && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends goreleaser

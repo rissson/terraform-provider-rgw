@@ -38,6 +38,7 @@
               go
               goimports
               golint
+              goreleaser
               nixpkgs-fmt
               pre-commit
               terraform

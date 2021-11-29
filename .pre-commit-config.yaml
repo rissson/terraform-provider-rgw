@@ -1,9 +1,17 @@
 repos:
-- repo: https://github.com/dnephin/pre-commit-golang
-  rev: v0.4.0
-  hooks:
-    - id: go-fmt
-    - id: go-imports
-    - id: go-lint
-    - id: go-mod-tidy
-    - id: go-vet
+  - repo: local
+    hooks:
+      - id: tfplugindocs
+        name: tfplugindocs
+        entry: bash -c "go get github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs && go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs && git checkout go.mod go.sum"
+        language: system
+        types: [go]
+        pass_filenames: false
+  - repo: https://github.com/dnephin/pre-commit-golang
+    rev: v0.4.0
+    hooks:
+      - id: go-fmt
+      - id: go-imports
+      - id: go-lint
+      - id: go-mod-tidy
+      - id: go-vet
