@@ -12,24 +12,13 @@ include:
   - template: Security/Secret-Detection.gitlab-ci.yml
 
 stages:
-  - docker
   - build
   - test
   - qa
   - security
   - release
+  - docker
   - misc
-
-docker build:
-  stage: docker
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
-  before_script:
-    - mkdir -p /kaniko/.docker
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-  script:
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_COMMIT_SHA --destination $CI_REGISTRY_IMAGE:latest
 
 build:
   stage: build
@@ -63,11 +52,6 @@ dependency_scanning:
   stage: security
   needs: []
 
-container_scanning:
-  stage: security
-  needs:
-    - docker build
-
 secret_detection:
   stage: security
   needs: []
@@ -89,6 +73,18 @@ release:
   only:
     - tags
 
+docker build:
+  stage: docker
+  needs: []
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  before_script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+  script:
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_SLUG:$CI_COMMIT_SHA --destination $CI_REGISTRY_IMAGE:latest
+
 code_navigation:
   stage: misc
   image: sourcegraph/lsif-go:v1
@@ -99,3 +95,8 @@ code_navigation:
   artifacts:
     reports:
       lsif: dump.lsif
+
+container_scanning:
+  stage: misc
+  needs:
+    - docker build
