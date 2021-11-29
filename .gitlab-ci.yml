@@ -36,6 +36,12 @@ test:
   script:
     - make test
 
+pre commit:
+  stage: qa
+  needs: []
+  script:
+    - pre-commit run --all-files
+
 code_quality:
   stage: qa
   needs: []
