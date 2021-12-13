@@ -252,34 +252,11 @@ func rgwUserFromSchemaUser(d *schema.ResourceData) rgwadmin.User {
 	return user
 }
 
-func flattenRgwSubuser(s interface{}) interface{} {
-	subuser := s.(struct {
-		ID          string
-		Permissions string
-	})
-
-	return map[string]interface{}{
-		"id":          subuser.ID,
-		"permissions": subuser.Permissions,
-	}
-}
-
 func flattenRgwKey(key rgwadmin.UserKeySpec) interface{} {
 	return map[string]interface{}{
 		"user":       key.User,
 		"access_key": key.AccessKey,
 		"secret_key": key.SecretKey,
-	}
-}
-
-func flattenRgwSwiftKey(s interface{}) interface{} {
-	swiftKey := s.(struct {
-		User      string
-		SecretKey string
-	})
-	return map[string]interface{}{
-		"user":       swiftKey.User,
-		"secret_key": swiftKey.SecretKey,
 	}
 }
 
@@ -311,9 +288,9 @@ func flattenRgwUser(user rgwadmin.User) interface{} {
 		"email":                 user.Email,
 		"suspended":             user.Suspended,
 		"max_buckets":           user.MaxBuckets,
-		"subusers":              funk.Map(user.Subusers, flattenRgwSubuser),
+		"subusers":              user.Subusers,
 		"keys":                  funk.Map(user.Keys, flattenRgwKey),
-		"swift_keys":            funk.Map(user.SwiftKeys, flattenRgwSwiftKey),
+		"swift_keys":            user.SwiftKeys,
 		"caps":                  funk.Map(user.Caps, flattenRgwUserCap),
 		"op_mask":               user.OpMask,
 		"default_placement":     user.DefaultPlacement,
