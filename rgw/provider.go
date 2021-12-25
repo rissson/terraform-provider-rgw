@@ -33,7 +33,9 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"rgw_user": resourceUser(),
 		},
-		DataSourcesMap:       map[string]*schema.Resource{},
+		DataSourcesMap: map[string]*schema.Resource{
+			"rgw_user": datasourceUser(),
+		},
 		ConfigureContextFunc: providerConfigure,
 	}
 }

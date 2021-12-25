@@ -9,217 +9,221 @@ import (
 	"github.com/thoas/go-funk"
 )
 
+func schemaUser() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		// Properties
+		"user_id": &schema.Schema{
+			Type:     schema.TypeString,
+			Required: true,
+			ForceNew: true,
+		},
+		"display_name": &schema.Schema{
+			Type:     schema.TypeString,
+			Computed: true,
+			Optional: true,
+		},
+		"email": &schema.Schema{
+			Type:     schema.TypeString,
+			Computed: true,
+			Optional: true,
+		},
+		"suspended": &schema.Schema{
+			Type:     schema.TypeInt,
+			Computed: true,
+			Optional: true,
+		},
+		"max_buckets": &schema.Schema{
+			Type:     schema.TypeInt,
+			Computed: true,
+			Optional: true,
+		},
+		// Only for creation and modification
+		"generate_key": &schema.Schema{
+			Type:     schema.TypeBool,
+			Optional: true,
+		},
+		"key_type": &schema.Schema{
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+		"user_caps": &schema.Schema{
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+		// Only for deletion
+		"purge_data": &schema.Schema{
+			Type:     schema.TypeInt,
+			Optional: true,
+		},
+		// Computed
+		"subusers": &schema.Schema{
+			Type:     schema.TypeList,
+			Computed: true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"id": &schema.Schema{
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+					"permissions": &schema.Schema{
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+				},
+			},
+		},
+		"keys": &schema.Schema{
+			Type:     schema.TypeList,
+			Computed: true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"user": &schema.Schema{
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+					"access_key": &schema.Schema{
+						Type:      schema.TypeString,
+						Computed:  true,
+						Sensitive: true,
+					},
+					"secret_key": &schema.Schema{
+						Type:      schema.TypeString,
+						Computed:  true,
+						Sensitive: true,
+					},
+				},
+			},
+		},
+		"swift_keys": &schema.Schema{
+			Type:     schema.TypeList,
+			Computed: true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"user": &schema.Schema{
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+					"secret_key": &schema.Schema{
+						Type:      schema.TypeString,
+						Computed:  true,
+						Sensitive: true,
+					},
+				},
+			},
+		},
+		"caps": &schema.Schema{
+			Type:     schema.TypeList,
+			Computed: true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"type": &schema.Schema{
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+					"perm": &schema.Schema{
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+				},
+			},
+		},
+		"op_mask": &schema.Schema{
+			Type:     schema.TypeString,
+			Computed: true,
+		},
+		"default_placement": &schema.Schema{
+			Type:     schema.TypeString,
+			Computed: true,
+		},
+		"default_storage_class": &schema.Schema{
+			Type:     schema.TypeString,
+			Computed: true,
+		},
+		"placement_tags": &schema.Schema{
+			Type:     schema.TypeList,
+			Computed: true,
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+		},
+		"bucket_quota": &schema.Schema{
+			Type:     schema.TypeList,
+			Computed: true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"user_id": &schema.Schema{
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+					"enabled": &schema.Schema{
+						Type:     schema.TypeBool,
+						Computed: true,
+					},
+					"max_size": &schema.Schema{
+						Type:     schema.TypeInt,
+						Computed: true,
+					},
+					"max_size_kb": &schema.Schema{
+						Type:     schema.TypeInt,
+						Computed: true,
+					},
+					"max_objects": &schema.Schema{
+						Type:     schema.TypeInt,
+						Computed: true,
+					},
+					"check_on_raw": &schema.Schema{
+						Type:     schema.TypeBool,
+						Computed: true,
+					},
+				},
+			},
+		},
+		"user_quota": &schema.Schema{
+			Type:     schema.TypeList,
+			Computed: true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"user_id": &schema.Schema{
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+					"enabled": &schema.Schema{
+						Type:     schema.TypeBool,
+						Computed: true,
+					},
+					"max_size": &schema.Schema{
+						Type:     schema.TypeInt,
+						Computed: true,
+					},
+					"max_size_kb": &schema.Schema{
+						Type:     schema.TypeInt,
+						Computed: true,
+					},
+					"max_objects": &schema.Schema{
+						Type:     schema.TypeInt,
+						Computed: true,
+					},
+					"check_on_raw": &schema.Schema{
+						Type:     schema.TypeBool,
+						Computed: true,
+					},
+				},
+			},
+		},
+		"type": &schema.Schema{
+			Type:     schema.TypeString,
+			Computed: true,
+		},
+	}
+}
+
 func resourceUser() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceUserCreate,
 		ReadContext:   resourceUserRead,
 		UpdateContext: resourceUserUpdate,
 		DeleteContext: resourceUserDelete,
-		Schema: map[string]*schema.Schema{
-			// Properties
-			"user_id": &schema.Schema{
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"display_name": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"email": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"suspended": &schema.Schema{
-				Type:     schema.TypeInt,
-				Computed: true,
-				Optional: true,
-			},
-			"max_buckets": &schema.Schema{
-				Type:     schema.TypeInt,
-				Computed: true,
-				Optional: true,
-			},
-			// Only for creation and modification
-			"generate_key": &schema.Schema{
-				Type:     schema.TypeBool,
-				Optional: true,
-			},
-			"key_type": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"user_caps": &schema.Schema{
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			// Only for deletion
-			"purge_data": &schema.Schema{
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			// Computed
-			"subusers": &schema.Schema{
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"id": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"permissions": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-					},
-				},
-			},
-			"keys": &schema.Schema{
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"user": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"access_key": &schema.Schema{
-							Type:      schema.TypeString,
-							Computed:  true,
-							Sensitive: true,
-						},
-						"secret_key": &schema.Schema{
-							Type:      schema.TypeString,
-							Computed:  true,
-							Sensitive: true,
-						},
-					},
-				},
-			},
-			"swift_keys": &schema.Schema{
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"user": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"secret_key": &schema.Schema{
-							Type:      schema.TypeString,
-							Computed:  true,
-							Sensitive: true,
-						},
-					},
-				},
-			},
-			"caps": &schema.Schema{
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"type": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"perm": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-					},
-				},
-			},
-			"op_mask": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"default_placement": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"default_storage_class": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"placement_tags": &schema.Schema{
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-			},
-			"bucket_quota": &schema.Schema{
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"user_id": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"enabled": &schema.Schema{
-							Type:     schema.TypeBool,
-							Computed: true,
-						},
-						"max_size": &schema.Schema{
-							Type:     schema.TypeInt,
-							Computed: true,
-						},
-						"max_size_kb": &schema.Schema{
-							Type:     schema.TypeInt,
-							Computed: true,
-						},
-						"max_objects": &schema.Schema{
-							Type:     schema.TypeInt,
-							Computed: true,
-						},
-						"check_on_raw": &schema.Schema{
-							Type:     schema.TypeBool,
-							Computed: true,
-						},
-					},
-				},
-			},
-			"user_quota": &schema.Schema{
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"user_id": &schema.Schema{
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"enabled": &schema.Schema{
-							Type:     schema.TypeBool,
-							Computed: true,
-						},
-						"max_size": &schema.Schema{
-							Type:     schema.TypeInt,
-							Computed: true,
-						},
-						"max_size_kb": &schema.Schema{
-							Type:     schema.TypeInt,
-							Computed: true,
-						},
-						"max_objects": &schema.Schema{
-							Type:     schema.TypeInt,
-							Computed: true,
-						},
-						"check_on_raw": &schema.Schema{
-							Type:     schema.TypeBool,
-							Computed: true,
-						},
-					},
-				},
-			},
-			"type": &schema.Schema{
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-		},
+		Schema:        schemaUser(),
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -336,6 +340,11 @@ func resourceUserCreate(ctx context.Context, d *schema.ResourceData, m interface
 func resourceUserRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	api := m.(*rgwadmin.API)
 	var diags diag.Diagnostics
+
+	userID, ok := d.GetOk("user_id")
+	if ok {
+		d.SetId(userID.(string))
+	}
 
 	user, err := api.GetUser(ctx, rgwadmin.User{ID: d.Id()})
 	if err != nil {
