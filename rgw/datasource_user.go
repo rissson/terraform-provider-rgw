@@ -6,6 +6,7 @@ import (
 
 func datasourceUser() *schema.Resource {
 	return &schema.Resource{
+		Description: "This data source can be used to retrieve information about a user.",
 		ReadContext: resourceUserRead,
 		Schema:      schemaUser(),
 	}

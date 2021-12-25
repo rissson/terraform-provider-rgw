@@ -13,9 +13,10 @@ func schemaUser() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		// Properties
 		"user_id": &schema.Schema{
-			Type:     schema.TypeString,
-			Required: true,
-			ForceNew: true,
+			Description: "The ID the user is referred by.",
+			Type:        schema.TypeString,
+			Required:    true,
+			ForceNew:    true,
 		},
 		"display_name": &schema.Schema{
 			Type:     schema.TypeString,
@@ -39,21 +40,25 @@ func schemaUser() map[string]*schema.Schema {
 		},
 		// Only for creation and modification
 		"generate_key": &schema.Schema{
-			Type:     schema.TypeBool,
-			Optional: true,
+			Description: "Only used for creation and modification. If true, a new key will be generated for the user. Default: true for creation, false for modification.",
+			Type:        schema.TypeBool,
+			Optional:    true,
 		},
 		"key_type": &schema.Schema{
-			Type:     schema.TypeString,
-			Optional: true,
+			Description: "Only use for creation and modification when `generate_key` is true.",
+			Type:        schema.TypeString,
+			Optional:    true,
 		},
 		"user_caps": &schema.Schema{
-			Type:     schema.TypeString,
-			Optional: true,
+			Description: "Only used to set user capabilities. To get user capabilities, use `caps` read-only attribute instead.",
+			Type:        schema.TypeString,
+			Optional:    true,
 		},
 		// Only for deletion
 		"purge_data": &schema.Schema{
-			Type:     schema.TypeInt,
-			Optional: true,
+			Description: "Only used when deleting the user. Check Ceph RGW Admin Ops API documentation for details.",
+			Type:        schema.TypeInt,
+			Optional:    true,
 		},
 		// Computed
 		"subusers": &schema.Schema{
@@ -219,6 +224,7 @@ func schemaUser() map[string]*schema.Schema {
 
 func resourceUser() *schema.Resource {
 	return &schema.Resource{
+		Description:   "This resource can be used to manage rgw users.",
 		CreateContext: resourceUserCreate,
 		ReadContext:   resourceUserRead,
 		UpdateContext: resourceUserUpdate,
