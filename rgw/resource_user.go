@@ -327,7 +327,7 @@ func resourceUserCreate(ctx context.Context, d *schema.ResourceData, m interface
 		user.KeyType = keyType.(string)
 	}
 
-	if userCaps, ok := d.GetOk("userCaps"); ok {
+	if userCaps, ok := d.GetOk("user_caps"); ok {
 		user.UserCaps = userCaps.(string)
 	}
 
