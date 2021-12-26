@@ -31,7 +31,8 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"rgw_user": resourceUser(),
+			"rgw_user":  resourceUser(),
+			"rgw_quota": resourceQuota(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"rgw_user": datasourceUser(),

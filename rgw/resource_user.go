@@ -155,64 +155,14 @@ func schemaUser() map[string]*schema.Schema {
 			Type:     schema.TypeList,
 			Computed: true,
 			Elem: &schema.Resource{
-				Schema: map[string]*schema.Schema{
-					"user_id": &schema.Schema{
-						Type:     schema.TypeString,
-						Computed: true,
-					},
-					"enabled": &schema.Schema{
-						Type:     schema.TypeBool,
-						Computed: true,
-					},
-					"max_size": &schema.Schema{
-						Type:     schema.TypeInt,
-						Computed: true,
-					},
-					"max_size_kb": &schema.Schema{
-						Type:     schema.TypeInt,
-						Computed: true,
-					},
-					"max_objects": &schema.Schema{
-						Type:     schema.TypeInt,
-						Computed: true,
-					},
-					"check_on_raw": &schema.Schema{
-						Type:     schema.TypeBool,
-						Computed: true,
-					},
-				},
+				Schema: schemaQuota(),
 			},
 		},
 		"user_quota": &schema.Schema{
 			Type:     schema.TypeList,
 			Computed: true,
 			Elem: &schema.Resource{
-				Schema: map[string]*schema.Schema{
-					"user_id": &schema.Schema{
-						Type:     schema.TypeString,
-						Computed: true,
-					},
-					"enabled": &schema.Schema{
-						Type:     schema.TypeBool,
-						Computed: true,
-					},
-					"max_size": &schema.Schema{
-						Type:     schema.TypeInt,
-						Computed: true,
-					},
-					"max_size_kb": &schema.Schema{
-						Type:     schema.TypeInt,
-						Computed: true,
-					},
-					"max_objects": &schema.Schema{
-						Type:     schema.TypeInt,
-						Computed: true,
-					},
-					"check_on_raw": &schema.Schema{
-						Type:     schema.TypeBool,
-						Computed: true,
-					},
-				},
+				Schema: schemaQuota(),
 			},
 		},
 		"type": &schema.Schema{
@@ -275,20 +225,6 @@ func flattenRgwUserCap(userCap rgwadmin.UserCapSpec) interface{} {
 		"type": userCap.Type,
 		"perm": userCap.Perm,
 	}
-}
-
-func flattenRgwQuota(quota rgwadmin.QuotaSpec, userID string) interface{} {
-	q := map[string]interface{}{
-		"enabled":      quota.Enabled,
-		"check_on_raw": quota.CheckOnRaw,
-		"max_size":     quota.MaxSize,
-		"max_size_kb":  quota.MaxSizeKb,
-		"max_objects":  quota.MaxObjects,
-	}
-	if userID != "" {
-		q["user_id"] = userID
-	}
-	return q
 }
 
 func flattenRgwUser(user rgwadmin.User) interface{} {
@@ -376,13 +312,6 @@ func resourceUserUpdate(ctx context.Context, d *schema.ResourceData, m interface
 	user, err := api.ModifyUser(ctx, user)
 	if err != nil {
 		return diag.FromErr(err)
-	}
-
-	for key, value := range flattenRgwUser(user).(map[string]interface{}) {
-		err := d.Set(key, value)
-		if err != nil {
-			return diag.FromErr(err)
-		}
 	}
 
 	diags = resourceUserRead(ctx, d, m)
