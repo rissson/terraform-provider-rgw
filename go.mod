@@ -6,6 +6,6 @@ require (
 	github.com/ceph/go-ceph v0.14.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.10.1
 	github.com/mattn/go-colorable v0.1.11 // indirect
-	github.com/thoas/go-funk v0.9.1
+	github.com/thoas/go-funk v0.9.2
 	github.com/zclconf/go-cty v1.10.0 // indirect
 )
