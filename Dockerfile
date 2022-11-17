@@ -12,7 +12,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends gcc make
 
 RUN curl -1sLf https://download.ceph.com/keys/release.asc | apt-key add - && \
-    echo "deb https://download.ceph.com/debian-octopus/ bullseye main" > /etc/apt/sources.list.d/ceph.list && \
+    echo "deb https://download.ceph.com/debian-quincy/ bullseye main" > /etc/apt/sources.list.d/ceph.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends libcephfs-dev librbd-dev librados-dev
 
