@@ -35,6 +35,6 @@ provider "rgw" {
 
 ### Optional
 
-- **access_key** (String, Sensitive)
-- **endpoint** (String)
-- **secret_key** (String, Sensitive)
+- `access_key` (String, Sensitive)
+- `endpoint` (String)
+- `secret_key` (String, Sensitive)

@@ -32,16 +32,19 @@ resource "rgw_quota" "user_my_user" {
 
 ### Required
 
-- **type** (String) `user` or `bucket`
-- **user_id** (String) The ID of the user to set the quota for.
+- `type` (String) `user` or `bucket`
+- `user_id` (String) The ID of the user to set the quota for.
 
 ### Optional
 
-- **check_on_raw** (Boolean)
-- **enabled** (Boolean)
-- **id** (String) The ID of this resource.
-- **max_objects** (Number)
-- **max_size** (Number)
-- **max_size_kb** (Number)
+- `check_on_raw` (Boolean)
+- `enabled` (Boolean)
+- `max_objects` (Number)
+- `max_size` (Number)
+- `max_size_kb` (Number)
+
+### Read-Only
+
+- `id` (String) The ID of this resource.
 
 

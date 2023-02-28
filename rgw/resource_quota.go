@@ -12,39 +12,39 @@ import (
 func schemaQuota() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		// Properties
-		"user_id": &schema.Schema{
+		"user_id": {
 			Description: "The ID of the user to set the quota for.",
 			Type:        schema.TypeString,
 			Required:    true,
 			ForceNew:    true,
 		},
-		"type": &schema.Schema{
+		"type": {
 			Description: "`user` or `bucket`",
 			Type:        schema.TypeString,
 			Required:    true,
 			ForceNew:    true,
 		},
-		"enabled": &schema.Schema{
+		"enabled": {
 			Type:     schema.TypeBool,
 			Optional: true,
 			Default:  true,
 		},
-		"check_on_raw": &schema.Schema{
+		"check_on_raw": {
 			Type:     schema.TypeBool,
 			Optional: true,
 			Default:  false,
 		},
-		"max_size": &schema.Schema{
+		"max_size": {
 			Type:     schema.TypeInt,
 			Optional: true,
 			Computed: true,
 		},
-		"max_size_kb": &schema.Schema{
+		"max_size_kb": {
 			Type:     schema.TypeInt,
 			Optional: true,
 			Computed: true,
 		},
-		"max_objects": &schema.Schema{
+		"max_objects": {
 			Type:     schema.TypeInt,
 			Optional: true,
 			Computed: true,

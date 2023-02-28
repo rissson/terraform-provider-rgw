@@ -12,103 +12,91 @@ import (
 func schemaUser() map[string]*schema.Schema {
 	return map[string]*schema.Schema{
 		// Properties
-		"user_id": &schema.Schema{
+		"user_id": {
 			Description: "The ID the user is referred by.",
 			Type:        schema.TypeString,
 			Required:    true,
 			ForceNew:    true,
 		},
-		"display_name": &schema.Schema{
+		"tenant": {
+			Description: "The tenant name where the user ID is part of.",
+			Type:        schema.TypeString,
+			Optional:    true,
+		},
+		"display_name": {
 			Type:     schema.TypeString,
 			Computed: true,
 			Optional: true,
 		},
-		"email": &schema.Schema{
+		"email": {
 			Type:     schema.TypeString,
 			Computed: true,
 			Optional: true,
 		},
-		"suspended": &schema.Schema{
+		"suspended": {
 			Type:     schema.TypeInt,
 			Computed: true,
 			Optional: true,
 		},
-		"max_buckets": &schema.Schema{
+		"max_buckets": {
 			Type:     schema.TypeInt,
 			Computed: true,
 			Optional: true,
 		},
 		// Only for creation and modification
-		"generate_key": &schema.Schema{
+		"generate_key": {
 			Description: "Only used for creation and modification. If true, a new key will be generated for the user. Default: true for creation, false for modification.",
 			Type:        schema.TypeBool,
 			Optional:    true,
 		},
-		"key_type": &schema.Schema{
+		"key_type": {
 			Description: "Only use for creation and modification when `generate_key` is true.",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
-		"user_caps": &schema.Schema{
+		"user_caps": {
 			Description: "Only used to set user capabilities. To get user capabilities, use `caps` read-only attribute instead.",
 			Type:        schema.TypeString,
 			Optional:    true,
 		},
 		// Only for deletion
-		"purge_data": &schema.Schema{
+		"purge_data": {
 			Description: "Only used when deleting the user. Check Ceph RGW Admin Ops API documentation for details.",
 			Type:        schema.TypeInt,
 			Optional:    true,
 		},
 		// Computed
-		"subusers": &schema.Schema{
+		"subusers": {
 			Type:     schema.TypeList,
 			Computed: true,
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
-					"id": &schema.Schema{
+					"id": {
 						Type:     schema.TypeString,
 						Computed: true,
 					},
-					"permissions": &schema.Schema{
+					"permissions": {
 						Type:     schema.TypeString,
 						Computed: true,
 					},
 				},
 			},
 		},
-		"keys": &schema.Schema{
+		"keys": {
 			Type:     schema.TypeList,
 			Computed: true,
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
-					"user": &schema.Schema{
+					"user": {
 						Type:     schema.TypeString,
 						Computed: true,
 					},
-					"access_key": &schema.Schema{
+					"access_key": {
 						Type:      schema.TypeString,
 						Computed:  true,
 						Sensitive: true,
 					},
-					"secret_key": &schema.Schema{
-						Type:      schema.TypeString,
-						Computed:  true,
-						Sensitive: true,
-					},
-				},
-			},
-		},
-		"swift_keys": &schema.Schema{
-			Type:     schema.TypeList,
-			Computed: true,
-			Elem: &schema.Resource{
-				Schema: map[string]*schema.Schema{
-					"user": &schema.Schema{
-						Type:     schema.TypeString,
-						Computed: true,
-					},
-					"secret_key": &schema.Schema{
+					"secret_key": {
 						Type:      schema.TypeString,
 						Computed:  true,
 						Sensitive: true,
@@ -116,56 +104,59 @@ func schemaUser() map[string]*schema.Schema {
 				},
 			},
 		},
-		"caps": &schema.Schema{
+		"swift_keys": {
 			Type:     schema.TypeList,
 			Computed: true,
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
-					"type": &schema.Schema{
+					"user": {
 						Type:     schema.TypeString,
 						Computed: true,
 					},
-					"perm": &schema.Schema{
+					"secret_key": {
+						Type:      schema.TypeString,
+						Computed:  true,
+						Sensitive: true,
+					},
+				},
+			},
+		},
+		"caps": {
+			Type:     schema.TypeList,
+			Computed: true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"type": {
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+					"perm": {
 						Type:     schema.TypeString,
 						Computed: true,
 					},
 				},
 			},
 		},
-		"op_mask": &schema.Schema{
+		"op_mask": {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
-		"default_placement": &schema.Schema{
+		"default_placement": {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
-		"default_storage_class": &schema.Schema{
+		"default_storage_class": {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
-		"placement_tags": &schema.Schema{
+		"placement_tags": {
 			Type:     schema.TypeList,
 			Computed: true,
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
 			},
 		},
-		"bucket_quota": &schema.Schema{
-			Type:     schema.TypeList,
-			Computed: true,
-			Elem: &schema.Resource{
-				Schema: schemaQuota(),
-			},
-		},
-		"user_quota": &schema.Schema{
-			Type:     schema.TypeList,
-			Computed: true,
-			Elem: &schema.Resource{
-				Schema: schemaQuota(),
-			},
-		},
-		"type": &schema.Schema{
+		"type": {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
@@ -189,6 +180,10 @@ func resourceUser() *schema.Resource {
 func rgwUserFromSchemaUser(d *schema.ResourceData) rgwadmin.User {
 	user := rgwadmin.User{
 		ID: d.Get("user_id").(string),
+	}
+
+	if tenantId, ok := d.GetOk("tenant"); ok {
+		user.Tenant = tenantId.(string)
 	}
 
 	if displayName, ok := d.GetOk("display_name"); ok {
@@ -230,6 +225,7 @@ func flattenRgwUserCap(userCap rgwadmin.UserCapSpec) interface{} {
 func flattenRgwUser(user rgwadmin.User) interface{} {
 	return map[string]interface{}{
 		"user_id":               user.ID,
+		"tenant":                user.Tenant,
 		"display_name":          user.DisplayName,
 		"email":                 user.Email,
 		"suspended":             user.Suspended,
@@ -242,8 +238,6 @@ func flattenRgwUser(user rgwadmin.User) interface{} {
 		"default_placement":     user.DefaultPlacement,
 		"default_storage_class": user.DefaultStorageClass,
 		"placement_tags":        user.PlacementTags,
-		"bucket_quota":          []interface{}{flattenRgwQuota(user.BucketQuota, user.ID)},
-		"user_quota":            []interface{}{flattenRgwQuota(user.UserQuota, user.ID)},
 		"type":                  user.Type,
 	}
 }
@@ -267,6 +261,10 @@ func resourceUserCreate(ctx context.Context, d *schema.ResourceData, m interface
 		user.UserCaps = userCaps.(string)
 	}
 
+	if tenantId, ok := d.GetOk("tenant"); ok {
+		user.Tenant = tenantId.(string)
+	}
+
 	user, err := api.CreateUser(ctx, user)
 	if err != nil {
 		return diag.FromErr(err)
@@ -282,11 +280,23 @@ func resourceUserCreate(ctx context.Context, d *schema.ResourceData, m interface
 func resourceUserRead(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	api := m.(*rgwadmin.API)
 	var diags diag.Diagnostics
+	var setUid string
 
 	userID, ok := d.GetOk("user_id")
 	if ok {
-		d.SetId(userID.(string))
+		setUid = userID.(string)
 	}
+
+	// HACK: We need to find a better way to set Id when a tenant is set.
+	// HACK: This works but feels not the right way. The API state that only uid
+	// HACK: can be set.
+	// HACK: https://docs.ceph.com/en/latest/radosgw/adminops/#get-user-info
+	tenant, ok := d.GetOk("tenant")
+	if ok {
+		setUid = tenant.(string) + "$" + setUid
+	}
+
+	d.SetId(setUid)
 
 	user, err := api.GetUser(ctx, rgwadmin.User{ID: d.Id()})
 	if err != nil {
